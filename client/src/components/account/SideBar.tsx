@@ -1,7 +1,7 @@
 import { IoSettingsSharp } from "react-icons/io5";
 import { RiBillFill } from "react-icons/ri";
 import { TbLogout2 } from "react-icons/tb";
-import { Link, useLocation, type Location } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { apiLogout } from "../../service/apiAuth";
 

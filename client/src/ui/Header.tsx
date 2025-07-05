@@ -1,4 +1,3 @@
-import { CiSearch } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
