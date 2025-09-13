@@ -4,8 +4,10 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { IUser } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { apiSignup } from "../service/apiAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
+  const navigate = useNavigate();
   const [formData, setData] = useState<IUser>({
     name: "",
     email: "",
@@ -21,9 +23,8 @@ export default function Signup() {
     e.preventDefault();
     try {
       const res = await apiSignup(formData);
-      if (res.status === 200) {
-        toast.success("Successfully logged in");
-      }
+      navigate("/login");
+      toast.success("Successfully logged in");
     } catch (err: any) {
       const msg: string = err?.response?.data?.message || err?.message;
       toast.error(msg);

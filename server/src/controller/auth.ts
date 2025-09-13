@@ -3,31 +3,34 @@ import { Users } from '../models/users';
 import { catchAsync } from '../utils/catchAsync';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/AppError';
+import { getAuthResponse } from '../utils/getAuthResponse';
 
-const jwt_expiry = process.env.JWTE || '';
+export const jwt_expiry = process.env.JWTE || '';
 
+// SIGN UP
 export const signUp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password, passwordConfirm } = req.body;
+    if (password !== passwordConfirm) {
+      return next(new AppError("The Password does't match", 500));
+    }
+    const existEmail = await Users.findOne({ email: email });
+    if (existEmail) {
+      return next(
+        new AppError(
+          'The Email is already in use. Please use another one.',
+          500
+        )
+      );
+    }
     const user = await Users.create(req.body);
-    const token = jwt.sign({ id: user._id }, jwt_expiry, {
-      expiresIn: '90d',
-    });
-
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-    });
-
     user.password = undefined;
-    res.json({
-      status: 200,
-      token,
-      doc: user,
-    });
+
+    getAuthResponse(user, res);
   }
 );
+
+// LOGIN
 export const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
@@ -39,25 +42,12 @@ export const login = catchAsync(
       return next(new AppError('The password is wrong', 404));
     }
     user.password = undefined;
-    const token = jwt.sign({ id: user._id }, jwt_expiry, {
-      expiresIn: '90d',
-    });
 
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-    });
-
-    res.json({
-      status: 200,
-      token,
-      doc: user,
-    });
+    getAuthResponse(user, res);
   }
 );
 
+// LOGOUT
 export const logout = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     res.cookie('jwt', '', {
@@ -105,6 +95,7 @@ export const protect = catchAsync(
   }
 );
 
+// ME
 export const getMe = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const user = await Users.findById((req as any).user._id);
