@@ -1,11 +1,12 @@
 import type { NextFunction, Request, Response } from 'express';
 import { Users } from '../models/users';
-import { catchAsync } from '../utils/catchAsync';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/AppError';
-import { getAuthResponse } from '../utils/getAuthResponse';
+import { Features } from '../utils/Features';
 
-export const jwt_expiry = process.env.JWTE || '';
+const JWT_SECRET = process.env.JWT_SECRET || '';
+
+const { catchAsync, getAuthResponse } = new Features();
 
 // SIGN UP
 export const signUp = catchAsync(
@@ -85,7 +86,7 @@ export const protect = catchAsync(
       return next(new AppError('Unauthorized: No token provided', 401));
     }
 
-    const decoded = jwt.verify(token, jwt_expiry) as jwt.JwtPayload;
+    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
     const user = await Users.findById(decoded.id);
     if (!user) {
       return next(new AppError('User no longer exists', 401));

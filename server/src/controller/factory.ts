@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { catchAsync } from '../utils/catchAsync';
 import type { Model, Document } from 'mongoose';
 import { AppError } from '../utils/AppError';
+import { Features } from '../utils/Features';
+
+const { catchAsync } = new Features();
 
 export const getDocs = <T extends Document>(model: Model<T>) =>
-  catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  catchAsync(async (_req: Request, res: Response, next: NextFunction) => {
     const docs = await model.find();
     res.json({
       status: 200,

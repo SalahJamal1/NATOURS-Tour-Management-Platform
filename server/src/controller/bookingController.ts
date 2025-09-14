@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { Booking } from '../models/booking';
-import { catchAsync } from '../utils/catchAsync';
-
 import { IToure, Tours } from '../models/tours';
 import { AppError } from '../utils/AppError';
+import { Features } from '../utils/Features';
+
+const { catchAsync } = new Features();
 
 export const createBooking = catchAsync(
   async (req: Request | any, res: Response, next: NextFunction) => {
