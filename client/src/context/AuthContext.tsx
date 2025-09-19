@@ -1,5 +1,6 @@
-import { useMemo, useReducer, type ReactNode } from "react";
+import { useEffect, useMemo, useReducer, type ReactNode } from "react";
 import { AuthProvider } from "../hooks/useAuth";
+import { apiMe } from "../service/apiAuth";
 
 type location = {
   description: string;
@@ -126,6 +127,26 @@ export default function AuthContext({ children }: Props) {
     reducer,
     initialState
   );
+  const jwt = localStorage.getItem("jwt");
+
+  useEffect(() => {
+    async function fetchUser() {
+      dispatch({ type: "SET_LOADER" });
+      try {
+        if (!jwt) throw new Error("The token is null");
+        const res = await apiMe(jwt);
+        if (res.status === 200) {
+          dispatch({ type: "SET_USER", payload: res.data.user });
+        }
+      } catch (err: any) {
+        dispatch({ type: "SET_ERROR", payload: err.message });
+        throw Error(err.message);
+      }
+    }
+    if (jwt) {
+      fetchUser();
+    }
+  }, [dispatch, jwt]);
 
   const value = useMemo(() => {
     return {

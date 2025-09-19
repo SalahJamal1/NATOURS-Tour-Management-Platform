@@ -4,6 +4,7 @@ type Props = {
   tour: IToure;
 };
 export default function TourReviews({ tour }: Props) {
+  console.log(tour);
   return (
     <section className="section-reviews">
       <div className="reviews">

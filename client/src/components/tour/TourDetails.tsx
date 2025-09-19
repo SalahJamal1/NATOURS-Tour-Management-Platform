@@ -42,15 +42,14 @@ export default function TourDetails({ tour }: Props) {
           </div>
           <div className="overview-box__group">
             <h2 className="heading-secondary ma-bt-lg">Your tour guides</h2>
-            {tour.reviews?.map((review) => (
-              <div className="overview-box__detail" key={review._id}>
+            {tour.guides?.map((guide) => (
+              <div className="overview-box__detail" key={guide._id}>
                 <img
-                  src={`/img/users/${review.user.photo}`}
+                  src={`/img/users/${guide.photo}`}
                   className="overview-box__img"
-                  alt={`${review.user.role}`}
+                  alt={`${guide.name}`}
                 />
-                <span className="overview-box__label">{review.user.role}</span>
-                <span className="overview-box__text">Steven Miller</span>
+                <span className="overview-box__text">{guide.name}</span>
               </div>
             ))}
           </div>
