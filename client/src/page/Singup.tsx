@@ -22,7 +22,7 @@ export default function Signup() {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await apiSignup(formData);
+      await apiSignup(formData);
       navigate("/login");
       toast.success("Successfully logged in");
     } catch (err: any) {
