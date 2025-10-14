@@ -8,10 +8,7 @@ import { CorsOptions } from 'cors';
 import { Options } from 'express-rate-limit';
 dotenv.config();
 
-const DB_URI: string =
-  process.env.NODE_PUBLIC_ENVIRONMENT === 'docker'
-    ? process.env.MONGO_URI!
-    : process.env.DB_URI!;
+const DB_URI: string = process.env.DB_URI;
 
 export class Features {
   limitOptions: Partial<Options> = {
