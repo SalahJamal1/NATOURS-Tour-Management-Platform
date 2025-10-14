@@ -10,49 +10,39 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      mongo:
-        image: mongo:7
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd="mongo --eval 'db.adminCommand(\"ping\")'"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       # Checkout repo
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      # Setup Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      # Build Frontend
-      - name: Build Frontend
-        working-directory: client
+      # Build and start services with Docker Compose
+      - name: Build and start services
         run: |
-          npm ci
-          npm run build
+          docker-compose -f docker-compose.ci.yml up -d --build
 
-      # Build Backend
-      - name: Build Backend
-        working-directory: server
+      # Wait for MongoDB to be ready
+      - name: Wait for MongoDB
         run: |
-          npm ci
-          npm run build
+          echo "Waiting for MongoDB to be ready..."
+          until docker exec mongo mongo --eval "db.adminCommand('ping')" > /dev/null 2>&1; do
+            sleep 2
+          done
 
-      # Build Docker images
-      - name: Build Docker images
+      # Run backend tests (optional)
+      - name: Run backend tests
         run: |
-          docker build -t natours-frontend ./client
-          docker build -t natours-backend ./server
+          docker exec server npm run test
 
-      # Push Docker images
+      # Run frontend tests (optional)
+      - name: Run frontend tests
+        run: |
+          docker exec client npm run test
+
+      # Push Docker images if on main
       - name: Push Docker images
         if: github.ref == 'refs/heads/main'
         env:
@@ -60,7 +50,4 @@ jobs:
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
         run: |
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-          docker tag natours-frontend $DOCKER_USER/natours-frontend:latest
-          docker tag natours-backend $DOCKER_USER/natours-backend:latest
-          docker push $DOCKER_USER/natours-frontend:latest
-          docker push $DOCKER_USER/natours-backend:latest
+          docker-compose -f docker-compose.ci.yml push
