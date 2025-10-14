@@ -10,6 +10,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # services:
+    #   mongo:
+    #     image: mongo:6
+    #     ports:
+    #       - 27017:27017
+    #     options: >-
+    #       --health-cmd="mongo --eval 'db.adminCommand(\"ping\")'"
+    #       --health-interval=10s
+    #       --health-timeout=5s
+    #       --health-retries=5
+
     steps:
       # Checkout repo
       - name: Checkout code
@@ -20,10 +31,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      # Install Docker Compose plugin if needed
-      - name: Check Docker Compose
-        run: docker compose version
 
       # Build Frontend
       - name: Build Frontend
@@ -39,22 +46,13 @@ jobs:
           npm ci
           npm run build
 
-      # Start all services using docker compose
-      - name: Start services
+      # Build Docker images
+      - name: Build Docker images
         run: |
-          docker compose -f docker-compose.yml up -d --build
+          docker build -t natours-frontend ./client
+          docker build -t natours-backend ./server
 
-      # Optional: Wait for MongoDB to be ready
-      - name: Wait for MongoDB
-        run: |
-          echo "Waiting for MongoDB to be ready..."
-          for i in {1..20}; do
-            docker exec mongo mongo --eval "db.adminCommand('ping')" && break
-            echo "Mongo not ready yet... retrying in 3s"
-            sleep 3
-          done
-
-      # Push Docker images (optional, only on main branch)
+      # Push Docker images
       - name: Push Docker images
         if: github.ref == 'refs/heads/main'
         env:
@@ -62,7 +60,7 @@ jobs:
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
         run: |
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-          docker tag natours-frontend $DOCKER_USER/natour-frontend:latest
+          docker tag natours-frontend $DOCKER_USER/natours-frontend:latest
           docker tag natours-backend $DOCKER_USER/natours-backend:latest
-          docker push $DOCKER_USER/natour-frontend:latest
+          docker push $DOCKER_USER/natours-frontend:latest
           docker push $DOCKER_USER/natours-backend:latest
