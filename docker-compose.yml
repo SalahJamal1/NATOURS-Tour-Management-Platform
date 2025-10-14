@@ -19,7 +19,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - MONGO_URI=mongodb+srv://salahabufarha3:1996@cluster0.ksmlnf7.mongodb.net/natoursts
+      - MONGO_URI=mongodb://mongo:27017/mydb
       - NODE_PUBLIC_ENVIRONMENT=docker
     depends_on:
       - mongo

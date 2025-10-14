@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon src/server.ts",
-    "start": "node dist/server.js"
+    "start": "tsc && node dist/server.js"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

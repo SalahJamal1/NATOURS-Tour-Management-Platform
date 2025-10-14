@@ -11,6 +11,7 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src"],
+
+  "include": ["src", "src/data"],
   "exclude": ["node_modules", "dist"]
 }
