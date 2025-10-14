@@ -22,9 +22,8 @@ jobs:
           node-version: 20
 
       # Install Docker Compose plugin if needed
-      - name: Ensure Docker Compose available
-        run: |
-          docker compose version || sudo apt-get update && sudo apt-get install -y docker-compose-plugin
+      - name: Check Docker Compose
+        run: docker compose version
 
       # Build Frontend
       - name: Build Frontend
