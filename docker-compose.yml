@@ -19,7 +19,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - MONGO_URI=mongodb://mongo:27017/mydb
+      - MONGO_URI=mongodb://root:2025@mongo:27017/mydb
       - NODE_PUBLIC_ENVIRONMENT=docker
     depends_on:
       - mongo
