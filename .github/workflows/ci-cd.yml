@@ -50,7 +50,7 @@ jobs:
       - name: Build Docker images
         run: |
           docker build -t natours-frontend ./client
-          docker build -t natours-backend ./server
+          docker build -t Natours-backend ./server
 
       # Push Docker images
       - name: Push Docker images
@@ -60,7 +60,7 @@ jobs:
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
         run: |
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-          docker tag natours-frontend $DOCKER_USER/natours-frontend:latest
+          docker tag Natours-frontend $DOCKER_USER/natours-frontend:latest
           docker tag natours-backend $DOCKER_USER/natours-backend:latest
           docker push $DOCKER_USER/natours-frontend:latest
           docker push $DOCKER_USER/natours-backend:latest
