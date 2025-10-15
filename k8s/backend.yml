@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: natours
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+        - name: server
+          image: salah529/natours-backend:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MONGO_URI
+              value: mongodb://mongo-service:27017/mern_db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: natours
+spec:
+  type: ClusterIP
+  selector:
+    app: server
+  ports:
+    - port: 3000
+      targetPort: 3000
