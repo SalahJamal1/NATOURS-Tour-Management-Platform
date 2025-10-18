@@ -10,7 +10,6 @@ type location = {
 export interface IToure extends Document {
   startLocation: location;
   ratingsAverage: number;
-
   ratingsQuantity: number;
   images: string[];
   startDates: Date[];

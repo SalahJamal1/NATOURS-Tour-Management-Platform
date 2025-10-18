@@ -9,7 +9,6 @@ import { Options } from 'express-rate-limit';
 dotenv.config();
 
 const DB_URI: string = process.env.MONGO_URI!;
-
 export class Features {
   limitOptions: Partial<Options> = {
     max: 100,

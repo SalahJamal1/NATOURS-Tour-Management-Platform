@@ -4,7 +4,7 @@ metadata:
   name: frontend-deployment
   namespace: natours
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: client
@@ -17,7 +17,7 @@ spec:
         - name: client
           image: salah529/natours-frontend:latest
           ports:
-            - containerPort: 5173
+            - containerPort: 4173
           env:
             - name: REACT_APP_API_URL
               value: http://backend-service:3000
@@ -32,5 +32,5 @@ spec:
   selector:
     app: client
   ports:
-    - port: 5173
-      targetPort: 5173
+    - port: 4173
+      targetPort: 4173

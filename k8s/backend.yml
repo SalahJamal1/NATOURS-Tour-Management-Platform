@@ -4,7 +4,7 @@ metadata:
   name: backend-deployment
   namespace: natours
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: server
@@ -28,7 +28,7 @@ metadata:
   name: backend-service
   namespace: natours
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: server
   ports:

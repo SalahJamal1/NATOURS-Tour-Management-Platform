@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import type { Model, Document } from 'mongoose';
+import mongoose, { Model, Document } from 'mongoose';
 import { AppError } from '../utils/AppError';
 import { Features } from '../utils/Features';
 
@@ -16,8 +16,8 @@ export const getDocs = <T extends Document>(model: Model<T>) =>
 
 export const getDoc = <T extends Document>(model: Model<T>) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const doc = await model.findById(req.params.id);
-
+    const { id } = req.params;
+    const doc = await model.findOne({ _id: new mongoose.Types.ObjectId(id) });
     if (!doc) {
       throw new AppError(`We cannot found the doc #${req.params.id}`, 404);
     }
