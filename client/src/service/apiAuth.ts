@@ -14,8 +14,9 @@ export async function apiLogout() {
   const res = await api.get("/Logout");
   return res;
 }
-export async function apiMe(jwt: string) {
+export async function apiMe(jwt: string, signal?: AbortSignal) {
   const res = await api.get("/Me", {
+    signal,
     headers: {
       Authorization: `Bearer ${jwt}`,
     },

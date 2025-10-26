@@ -130,22 +130,25 @@ export default function AuthContext({ children }: Props) {
   const jwt = localStorage.getItem("jwt");
 
   useEffect(() => {
-    async function fetchUser() {
-      dispatch({ type: "SET_LOADER" });
-      try {
-        if (!jwt) throw new Error("The token is null");
-        const res = await apiMe(jwt);
-        if (res.status === 200) {
-          dispatch({ type: "SET_USER", payload: res.data.user });
-        }
-      } catch (err: any) {
-        dispatch({ type: "SET_ERROR", payload: err.message });
-        throw Error(err.message);
-      }
-    }
+    const controller = new AbortController();
     if (jwt) {
+      async function fetchUser() {
+        dispatch({ type: "SET_LOADER" });
+        try {
+          if (!jwt) throw new Error("The token is null");
+          const res = await apiMe(jwt, controller.signal);
+          if (res.status === 200) {
+            dispatch({ type: "SET_USER", payload: res.data.user });
+          }
+        } catch (err: any) {
+          if (err.name === "CanceledError") return;
+          dispatch({ type: "SET_ERROR", payload: err.message });
+          throw Error(err.message);
+        }
+      }
       fetchUser();
     }
+    return () => controller.abort();
   }, [dispatch, jwt]);
 
   const value = useMemo(() => {
